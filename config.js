@@ -3,7 +3,7 @@
  * ============================================================ */
 window.PB = {
   // 1. Tempel URL web app Apps Script (berakhiran /exec) di antara tanda kutip
-  API_URL: 'TEMPEL_URL_WEB_APP_DI_SINI',
+  API_URL: 'https://script.google.com/macros/s/AKfycbyEXsHfq9_MF__3hlLsj5CMVJStnEJogk-3Tzyu5fojWpDL7vRloi_rmUPH5FZlualzLQ/exec',
 
   // 2. Tulisan di frame & halaman
   PRIA: 'Arya',
