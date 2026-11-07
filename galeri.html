@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Galeri Photobooth · Arya &amp; Jifa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --cream: #F6EFE2; --cream2: #EDE3D2; --garis: #E9DCC4; --hijau: #2F4A3A; --hijau-tua: #1F3328; --mahoni: #6B2A1D;
+          --ink: #2A211C; --muted: #6B5E55; --border: #DDD0BA; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--cream); color: var(--ink); }
+  body { font: 15px/1.45 "Plus Jakarta Sans", system-ui, sans-serif; }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--mahoni); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  .serif { font-family: "Cormorant Garamond", Georgia, serif; }
+  .script { font-family: "Great Vibes", cursive; }
+  .wadah { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  header { background: var(--hijau); color: var(--cream); }
+  header .wadah { padding-top: 22px; padding-bottom: 22px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+  .tbl { min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 12px; font-weight: 700; text-decoration: none; border: 1px solid rgba(246,239,226,.6); color: var(--cream); background: transparent; }
+  .tbl.isi { background: var(--cream); color: var(--hijau); border-color: var(--cream); }
+  canvas.pita { display: block; width: 100%; height: 12px; }
+  main.wadah { padding-top: 22px; padding-bottom: 48px; display: flex; flex-direction: column; gap: 18px; }
+  .stat { background: #fff; border-radius: 14px; padding: 10px 16px; display: flex; flex-direction: column; }
+  .stat span { font-size: 12px; color: var(--muted); } .stat b { font-size: 20px; color: var(--hijau); }
+  .baris { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+  .seg { display: inline-grid; grid-auto-flow: column; gap: 4px; padding: 4px; background: var(--cream2); border-radius: 12px; }
+  .seg button { min-height: 36px; border: 0; border-radius: 9px; font-size: 13px; font-weight: 700; padding: 0 12px; background: transparent; color: var(--muted); }
+  .seg button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(42,33,28,.18); }
+  .sakelar { min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--border); background: #fff; font-size: 13.5px; font-weight: 600; }
+  .sakelar i { width: 38px; height: 22px; border-radius: 11px; background: #CFC4B2; position: relative; flex: none; }
+  .sakelar i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }
+  .sakelar[aria-pressed="true"] i { background: var(--hijau); } .sakelar[aria-pressed="true"] i::after { left: 19px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+  .kartu { background: #fff; border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .kartu.sembunyi { opacity: .55; }
+  .kartu img { width: 100%; border-radius: 4px; display: block; background: var(--cream2); cursor: zoom-in; }
+  .kartu .ucapan { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 16px; color: #4A3B32; }
+  .kecil { font-size: 12px; color: var(--muted); }
+  .vn { background: var(--cream); border-radius: 10px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .vn .r { display: flex; align-items: center; gap: 8px; }
+  .play { width: 36px; height: 36px; flex: none; border-radius: 50%; border: 0; background: var(--mahoni); color: #fff; display: flex; align-items: center; justify-content: center; }
+  .prog { flex: 1; height: 4px; border-radius: 2px; background: var(--border); overflow: hidden; } .prog i { display: block; height: 100%; width: 0; background: var(--mahoni); }
+  .kb { min-height: 34px; border-radius: 8px; font-size: 12px; font-weight: 700; border: 1px solid var(--border); background: #fff; color: var(--hijau); padding: 0 10px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+  .kb[aria-pressed="true"] { background: var(--hijau); color: #fff; border-color: var(--hijau); }
+  .kb.mahoni { color: var(--mahoni); }
+  .aksi { display: flex; gap: 6px; margin-top: auto; } .aksi > * { flex: 1; }
+  .pin { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .pin form { background: #fff; border-radius: 20px; padding: 28px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 12px; text-align: center; }
+  .pin input { min-height: 50px; border: 1px solid var(--border); border-radius: 12px; text-align: center; font-size: 22px; letter-spacing: .3em; }
+  .tombol { min-height: 50px; border: 0; border-radius: 14px; background: var(--hijau); color: #fff; font-weight: 800; }
+  .galat { color: #7A2A14; font-size: 13px; }
+
+  /* slideshow */
+  #slide { position: fixed; inset: 0; background: var(--hijau-tua); color: var(--cream); z-index: 50; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 5vw; align-items: center; padding: 5vh 6vw; }
+  #slide img { max-height: 88vh; max-width: 100%; justify-self: center; box-shadow: 0 24px 60px rgba(0,0,0,.45); border-radius: 4px; transform: rotate(-1.2deg); transition: opacity .6s; }
+  #slide .nama { font-size: clamp(28px, 3.6vw, 48px); font-weight: 800; line-height: 1.1; }
+  #slide .ucap { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: clamp(24px, 2.8vw, 38px); line-height: 1.3; }
+  #slide .label { font-family: "Cormorant Garamond", Georgia, serif; font-size: 18px; font-weight: 600; letter-spacing: .32em; text-transform: uppercase; color: var(--garis); }
+  #slide .vnmain { display: inline-flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 30px; background: var(--mahoni); font-weight: 700; align-self: flex-start; }
+  #slide .qr { display: flex; align-items: center; gap: 18px; padding: 16px; border-radius: 18px; background: rgba(246,239,226,.08); border: 1px solid rgba(233,220,196,.3); align-self: flex-start; }
+  #slide .qr div:first-child { background: #fff; padding: 6px; border-radius: 8px; }
+  #slide .tutup { position: absolute; top: 16px; right: 16px; }
+  @media (max-width: 800px) { #slide { grid-template-columns: 1fr; } #slide img { max-height: 55vh; } }
+
+  /* kartu qr */
+  #kartuQR { position: fixed; inset: 0; background: rgba(20,27,22,.6); z-index: 40; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: auto; }
+  .kartuqr { width: 148mm; min-height: 210mm; background: var(--mahoni); padding: 7mm; position: relative; }
+  .kartuqr .dalam { background: var(--cream); outline: 1.5px solid var(--hijau); outline-offset: -10px; padding: 11mm 10mm; display: flex; flex-direction: column; align-items: center; gap: 3mm; text-align: center; min-height: calc(210mm - 14mm); }
+  .kartuqr #qrBesar { background: #fff; padding: 8px; border-radius: 8px; margin: 3mm 0; }
+  @media print {
+    body * { visibility: hidden; }
+    #kartuQR, #kartuQR .kartuqr, #kartuQR .kartuqr * { visibility: visible; }
+    #kartuQR { position: absolute; inset: 0; background: none; padding: 0; display: block; }
+    .jangancetak { display: none !important; }
+    @page { size: A5; margin: 0; }
+  }
+</style>
+<script src="config.js"></script>
+<script src="frame.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="pin" id="layarPin">
+  <form id="formPin">
+    <span class="serif" style="font-size:14px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--hijau)">Album photobooth</span>
+    <span class="script" style="font-size:46px;line-height:1;color:var(--mahoni)" id="namaPin">Arya &amp; Jifa</span>
+    <label for="pin" style="font-weight:700;margin-top:8px">Masukkan PIN galeri</label>
+    <input id="pin" inputmode="numeric" autocomplete="one-time-code" maxlength="10">
+    <span class="galat" id="galatPin" hidden></span>
+    <button class="tombol" type="submit">Buka galeri</button>
+  </form>
+</div>
+
+<div id="layarGaleri" hidden>
+  <header>
+    <div class="wadah">
+      <div style="display:flex;flex-direction:column">
+        <span class="serif" style="font-size:14px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--garis)">Album photobooth</span>
+        <span class="script" style="font-size:46px;line-height:1.05" id="namaAtas">Arya &amp; Jifa</span>
+        <span class="serif" style="font-style:italic;font-size:17px;letter-spacing:.08em;color:var(--garis)" id="tglAtas"></span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <button type="button" class="tbl isi" id="bukaSlide">Mode slideshow</button>
+        <button type="button" class="tbl" id="bukaQR">Kartu QR</button>
+        <a class="tbl" id="folderDrive" target="_blank" rel="noopener">Buka folder Google Drive</a>
+      </div>
+    </div>
+  </header>
+  <canvas class="pita" id="pita" aria-hidden="true"></canvas>
+  <main class="wadah">
+    <div class="baris">
+      <div style="display:flex;flex-wrap:wrap;gap:10px" id="statistik"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <div class="seg" role="group" aria-label="Saring foto" id="saring"></div>
+        <button type="button" class="sakelar" id="albumTamu" aria-pressed="true"><i></i>Album terlihat oleh tamu</button>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+    <p class="kecil" id="pesanGrid" style="text-align:center"></p>
+  </main>
+</div>
+
+<div id="slide" hidden>
+  <img id="slideFoto" alt="">
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <span class="label">Foto dari tamu</span>
+    <span class="nama" id="slideNama"></span>
+    <span class="ucap" id="slideUcap"></span>
+    <span class="vnmain" id="slideVN" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>Memutar voice note pilihan <span class="namaPasangan"></span></span>
+    <div class="qr"><div id="qrSlide"></div><div><b style="font-size:20px;display:block">Ikut berfoto, yuk!</b><span style="color:var(--garis)">Scan kode ini dengan kamera HP</span></div></div>
+  </div>
+  <button type="button" class="tbl tutup" id="tutupSlide">Keluar slideshow</button>
+</div>
+
+<div id="kartuQR" hidden>
+  <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+    <div class="kartuqr">
+      <div class="dalam">
+        <svg viewBox="0 0 24 26" width="30" height="32" aria-hidden="true"><path d="M12 1c4.5 5 9 11 9 17l-9 6-9-6c0-6 4.5-12 9-17z" fill="none" stroke="#2F4A3A" stroke-width="1.3"/><path d="M12 6v15M12 10l-3.5 3M12 10l3.5 3M12 14l-4.5 3.5M12 14l4.5 3.5" stroke="#2F4A3A" stroke-width="1.1" stroke-linecap="round"/></svg>
+        <span class="serif" style="font-size:16px;font-weight:600;letter-spacing:.34em;text-transform:uppercase;color:var(--hijau)">The wedding of</span>
+        <span class="script namaPasangan" style="font-size:62px;line-height:1;color:var(--mahoni)"></span>
+        <span class="serif tglPanjang" style="font-style:italic;font-size:21px;color:var(--hijau)"></span>
+        <div id="qrBesar"></div>
+        <span class="serif" style="font-size:25px;font-weight:600;color:var(--hijau)">Abadikan momen bersama kami</span>
+        <span style="font-size:16px;line-height:1.5;color:#4A3B32">Scan kode QR dengan kamera HP<br>Pilih frame, lalu berfoto<br>Fotomu langsung masuk ke album kami</span>
+      </div>
+    </div>
+    <div class="jangancetak" style="display:flex;gap:8px">
+      <button type="button" class="tbl isi" onclick="window.print()">Cetak / simpan PDF</button>
+      <button type="button" class="tbl" style="background:var(--hijau)" id="tutupQR">Tutup</button>
+    </div>
+    <span class="jangancetak kecil" style="color:var(--cream)" id="linkTamu"></span>
+  </div>
+</div>
+
+<script>
+(function () {
+  var P = window.PB, $ = function (id) { return document.getElementById(id); };
+  var namaPasangan = P.PRIA + ' & ' + P.WANITA;
+  var URL_TAMU = P.URL_TAMU || location.href.replace(/galeri\.html.*$/, '').replace(/[?#].*$/, '');
+  var S = { pin: '', data: null, saring: 'Semua', audio: new Audio(), main: null, slide: null };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+
+  ['namaPin', 'namaAtas'].forEach(function (id) { $(id).textContent = namaPasangan; });
+  document.querySelectorAll('.namaPasangan').forEach(function (e) { e.textContent = namaPasangan; });
+  document.querySelectorAll('.tglPanjang').forEach(function (e) { e.textContent = P.TANGGAL_PANJANG; });
+  $('tglAtas').textContent = P.TANGGAL_PANJANG;
+
+  function api(data) {
+    return fetch(P.API_URL, { method: 'POST', body: JSON.stringify(Object.assign({ pin: S.pin }, data)) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (!j.ok) throw new Error(j.error || 'Gagal'); return j; });
+  }
+
+  /* ---------- PIN ---------- */
+  try { S.pin = sessionStorage.getItem('pb_pin') || ''; } catch (e) {}
+  $('formPin').addEventListener('submit', function (e) {
+    e.preventDefault(); S.pin = $('pin').value.trim(); $('galatPin').hidden = true; muat(true);
+  });
+  function muat(dariForm) {
+    return api({ aksi: 'galeri' }).then(function (j) {
+      try { sessionStorage.setItem('pb_pin', S.pin); } catch (e) {}
+      S.data = j; $('layarPin').hidden = true; $('layarGaleri').hidden = false; tampilkan();
+      if (S.slide) S.slide.segarkan();
+    }).catch(function (e) {
+      if (dariForm || !S.data) { $('layarPin').hidden = false; $('layarGaleri').hidden = true; $('galatPin').textContent = e.message === 'PIN salah.' ? 'PIN salah.' : 'Belum bisa terhubung. Coba lagi.'; $('galatPin').hidden = !dariForm; }
+    });
+  }
+
+  /* ---------- tampilan galeri ---------- */
+  function jam(w) { return new Date(w).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+  function menit(d) { d = Math.round(d || 0); return Math.floor(d / 60) + ':' + String(d % 60).padStart(2, '0'); }
+  function tampilkan() {
+    var d = S.data, f = d.foto;
+    $('folderDrive').href = d.folder;
+    $('albumTamu').setAttribute('aria-pressed', d.albumTamu);
+    var terakhir = f[0] ? new Date(f[0].waktu).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '–';
+    $('statistik').innerHTML = [['Foto masuk', f.length], ['Dengan ucapan', f.filter(function (x) { return x.ucapan; }).length],
+      ['Voice note', f.filter(function (x) { return x.adaVoice; }).length], ['Foto terakhir', terakhir]]
+      .map(function (s) { return '<div class="stat"><span>' + s[0] + '</span><b>' + s[1] + '</b></div>'; }).join('');
+    $('saring').innerHTML = ['Semua', 'Ada ucapan', 'Ada voice note'].map(function (s) {
+      return '<button type="button" data-saring="' + s + '" aria-pressed="' + (s === S.saring) + '">' + s + '</button>'; }).join('');
+    var list = f.filter(function (x) { return S.saring === 'Semua' || (S.saring === 'Ada ucapan' ? x.ucapan : x.adaVoice); });
+    $('pesanGrid').textContent = list.length ? '' : (f.length ? 'Tidak ada foto di saringan ini.' : 'Belum ada foto. Foto tamu akan muncul di sini otomatis.');
+    $('grid').innerHTML = list.map(function (x) {
+      return '<article class="kartu' + (x.tampil ? '' : ' sembunyi') + '">' +
+        '<img loading="lazy" src="' + x.thumb + '" data-besar="' + x.besar + '" alt="Foto dari ' + esc(x.nama) + '">' +
+        '<div><b style="font-size:13.5px">' + esc(x.nama) + '</b><div class="kecil">' + jam(x.waktu) + ' · frame ' + esc(x.frame) + (x.tampil ? '' : ' · disembunyikan') + '</div>' +
+        (x.ucapan ? '<div class="ucapan">"' + esc(x.ucapan) + '"</div>' : '') + '</div>' +
+        (x.adaVoice ? '<div class="vn"><div class="r"><button type="button" class="play" data-vn="' + x.id + '" aria-label="Putar voice note dari ' + esc(x.nama) + '">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>' +
+          '<div class="prog"><i id="prog-' + x.id + '"></i></div><span class="kecil">' + menit(x.durasi) + '</span></div>' +
+          '<button type="button" class="kb" data-vnslide="' + x.id + '" aria-pressed="' + x.vnSlide + '">' + (x.vnSlide ? 'Diputar di slideshow' : 'Putar di slideshow') + '</button></div>' : '') +
+        '<div class="aksi"><a class="kb" href="' + x.unduh + '" target="_blank" rel="noopener">Unduh</a>' +
+        '<button type="button" class="kb mahoni" data-tampil="' + x.id + '" data-nilai="' + !x.tampil + '">' + (x.tampil ? 'Sembunyikan' : 'Tampilkan') + '</button></div></article>';
+    }).join('');
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('button, img');
+    if (!b) return;
+    if (b.dataset.saring) { S.saring = b.dataset.saring; tampilkan(); }
+    else if (b.id === 'albumTamu') { b.disabled = true; api({ aksi: 'setel', albumTamu: b.getAttribute('aria-pressed') !== 'true' }).then(function (j) { S.data = j; tampilkan(); }).finally(function () { b.disabled = false; }); }
+    else if (b.dataset.tampil) { b.disabled = true; api({ aksi: 'tampil', id: b.dataset.tampil, nilai: b.dataset.nilai === 'true' }).then(function (j) { S.data = j; tampilkan(); }); }
+    else if (b.dataset.vnslide) { b.disabled = true; api({ aksi: 'vnSlideshow', id: b.dataset.vnslide, nilai: b.getAttribute('aria-pressed') !== 'true' }).then(function (j) { S.data = j; tampilkan(); }); }
+    else if (b.dataset.vn) putar(b.dataset.vn, b);
+    else if (b.tagName === 'IMG' && b.dataset.besar) window.open(b.dataset.besar, '_blank', 'noopener');
+  });
+
+  /* ---------- voice note (diambil lewat PIN, tidak pernah publik) ---------- */
+  var cacheVN = {};
+  function ambilVN(id) {
+    if (cacheVN[id]) return Promise.resolve(cacheVN[id]);
+    return api({ aksi: 'voice', id: id }).then(function (j) {
+      var bin = atob(j.data), arr = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      cacheVN[id] = URL.createObjectURL(new Blob([arr], { type: j.mime }));
+      return cacheVN[id];
+    });
+  }
+  function putar(id, tombol) {
+    var a = S.audio;
+    if (S.main === id && !a.paused) { a.pause(); return; }
+    tombol.disabled = true;
+    ambilVN(id).then(function (url) {
+      S.main = id; a.src = url; a.play();
+      a.ontimeupdate = function () { var p = $('prog-' + id); if (p && a.duration) p.style.width = (a.currentTime / a.duration * 100) + '%'; };
+    }).catch(function () { alert('Voice note belum bisa diputar.'); }).finally(function () { tombol.disabled = false; });
+  }
+
+  /* ---------- slideshow ---------- */
+  function Slideshow() {
+    var urut = [], posisi = 0, timer = 0, sudah = {}, aktif = true;
+    function daftar() { return S.data.foto.filter(function (x) { return x.tampil; }); }
+    this.segarkan = function () {
+      daftar().forEach(function (x) { if (!sudah[x.id]) { sudah[x.id] = 1; urut.splice(posisi, 0, x); } }); // foto baru diputar berikutnya
+    };
+    function lanjut() {
+      if (!aktif) return;
+      clearTimeout(timer);
+      if (!urut.length) { $('slideNama').textContent = 'Menunggu foto pertama…'; timer = setTimeout(lanjut, 5000); return; }
+      var x = urut[posisi % urut.length]; posisi = (posisi + 1) % Math.max(urut.length, 1);
+      var img = $('slideFoto'); img.style.opacity = 0;
+      setTimeout(function () {
+        img.src = x.besar; img.alt = 'Foto dari ' + x.nama; img.style.opacity = 1;
+        $('slideNama').textContent = x.nama; $('slideUcap').textContent = x.ucapan ? '"' + x.ucapan + '"' : '';
+        $('slideVN').hidden = !(x.adaVoice && x.vnSlide);
+        if (x.adaVoice && x.vnSlide) {
+          ambilVN(x.id).then(function (url) {
+            var a = S.audio; a.src = url; a.onended = function () { timer = setTimeout(lanjut, 1500); };
+            a.play().catch(function () { timer = setTimeout(lanjut, 6000); });
+            timer = setTimeout(lanjut, (P.MAKS_VOICE_DETIK + 10) * 1000);
+          }).catch(function () { timer = setTimeout(lanjut, 6000); });
+        } else timer = setTimeout(lanjut, 6000);
+      }, 500);
+    }
+    this.mulai = function () {
+      daftar().slice().reverse().forEach(function (x) { sudah[x.id] = 1; urut.push(x); });
+      urut.reverse(); lanjut();
+    };
+    this.stop = function () { aktif = false; clearTimeout(timer); S.audio.pause(); };
+  }
+  $('bukaSlide').addEventListener('click', function () {
+    $('slide').hidden = false; $('qrSlide').innerHTML = '';
+    new QRCode($('qrSlide'), { text: URL_TAMU, width: 104, height: 104, colorDark: '#1F3328', colorLight: '#ffffff' });
+    S.slide = new Slideshow(); S.slide.mulai();
+    if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {});
+  });
+  $('tutupSlide').addEventListener('click', function () {
+    S.slide.stop(); S.slide = null; $('slide').hidden = true;
+    if (document.fullscreenElement) document.exitFullscreen();
+  });
+
+  /* ---------- kartu QR ---------- */
+  $('bukaQR').addEventListener('click', function () {
+    $('kartuQR').hidden = false; $('qrBesar').innerHTML = '';
+    new QRCode($('qrBesar'), { text: URL_TAMU, width: 200, height: 200, colorDark: '#2F4A3A', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+    $('linkTamu').textContent = 'Link tamu: ' + URL_TAMU;
+  });
+  $('tutupQR').addEventListener('click', function () { $('kartuQR').hidden = true; });
+
+  /* ---------- pita & mulai ---------- */
+  function pita() {
+    var c = $('pita'), dpr = window.devicePixelRatio || 1, w = c.clientWidth * dpr, h = 12 * dpr;
+    if (!w) return; c.width = w; c.height = h;
+    var lap = PBFrame.buatLapisan(Math.min(w, 2400), 'Mahoni');
+    c.getContext('2d').drawImage(lap.bawah, 0, lap.H - h, lap.W, h, 0, 0, w, h);
+  }
+  PBFrame.siapFont().then(function () { if (S.pin) muat(false).then(pita); });
+  $('formPin').addEventListener('submit', function () { setTimeout(pita, 800); });
+  setInterval(function () { if (S.data) muat(false); }, 30000);
+})();
+</script>
+</body>
+</html>
